@@ -1,8 +1,6 @@
-package com.example.superuser.firstopenglproject;
+package com.example.superuser.airhockey;
 
 import static android.opengl.GLES20.*;
-import static android.opengl.GLUtils.*;
-import static android.opengl.Matrix.*;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -14,7 +12,7 @@ import android.opengl.GLSurfaceView.Renderer;
  * Created by SuperUser on 14/09/2017.
  */
 
-public class FirstOpenGLProjectRenderer implements Renderer {
+public class AirHockeyRenderer implements Renderer {
     @Override
     public void onSurfaceCreated(GL10 glUnused, EGLConfig config){
         glClearColor(1.0f, 0.0f, 0.0f, 0.0f);

@@ -1,4 +1,4 @@
-package com.example.superuser.firstopenglproject;
+package com.example.superuser.airhockey;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

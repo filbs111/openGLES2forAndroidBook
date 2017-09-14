@@ -1,4 +1,4 @@
-package com.example.superuser.firstopenglproject;
+package com.example.superuser.airhockey;
 
 import org.junit.Test;
 
