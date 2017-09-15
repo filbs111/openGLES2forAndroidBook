@@ -26,34 +26,34 @@ public class AirHockeyRenderer implements Renderer {
     private static final int BYTES_PER_FLOAT = 4;
     private final FloatBuffer vertexData;
     private int program;
-    private static final String U_COLOR = "u_Color";
-    private int uColorLocation;
+    private static final String A_COLOR = "a_Color";
+    private static final int COLOR_COMPONENT_COUNT = 3;
+    private static final int STRIDE = (POSITION_COMPONENT_COUNT + COLOR_COMPONENT_COUNT ) * BYTES_PER_FLOAT;
+    private int aColorLocation;
     private static final String A_POSITION = "a_Position";
     private int aPositionLocation;
 
     public AirHockeyRenderer(Context context){
         this.context = context;
         float[] tableVertices = {
-                // Triangle 1
-                -0.5f, -0.5f,
-                0.5f, 0.5f,
-                -0.5f, 0.5f,
-
-                // Triangle 2
-                -0.5f, -0.5f,
-                0.5f, -0.5f,
-                0.5f, 0.5f,
+                // Triangle fan
+                0f, 0f,         1f,1f,1f,
+                -0.5f, -0.5f,   0.7f,0.7f,0.7f,
+                0.5f, -0.5f,    0.7f,0.7f,0.7f,
+                0.5f, 0.5f,     0.7f,0.7f,0.7f,
+                -0.5f, 0.5f,    0.7f,0.7f,0.7f,
+                -0.5f, -0.5f,   0.7f,0.7f,0.7f,
 
                 // Line 1
-                -0.5f, 0f,
-                0.5f, 0f,
+                -0.5f, 0f,      1f,0f,0f,
+                0.5f, 0f,       1f,0f,0f,
 
                 // Mallets
-                0f, -0.25f,
-                0f, 0.25f,
+                0f, -0.25f,     0f,0f,1f,
+                0f, 0.25f,      1f,0f,0f,
 
                 // puck
-                0f, 0f
+                0f, 0f,         1f,1f,0f
         };
 
         vertexData = ByteBuffer
@@ -75,11 +75,14 @@ public class AirHockeyRenderer implements Renderer {
             ShaderHelper.validateProgram(program);
         }
         glUseProgram(program);
-        uColorLocation = glGetUniformLocation(program, U_COLOR);
+        aColorLocation = glGetAttribLocation(program, A_COLOR);
         aPositionLocation = glGetAttribLocation(program, A_POSITION);
         vertexData.position(0);
-        glVertexAttribPointer(aPositionLocation, POSITION_COMPONENT_COUNT, GL_FLOAT, false, 0, vertexData);
+        glVertexAttribPointer(aPositionLocation, POSITION_COMPONENT_COUNT, GL_FLOAT, false, STRIDE, vertexData);
         glEnableVertexAttribArray(aPositionLocation);
+        vertexData.position(POSITION_COMPONENT_COUNT);
+        glVertexAttribPointer(aColorLocation, COLOR_COMPONENT_COUNT, GL_FLOAT, false, STRIDE, vertexData);
+        glEnableVertexAttribArray(aColorLocation);
     }
 
     @Override
@@ -90,25 +93,15 @@ public class AirHockeyRenderer implements Renderer {
 
     @Override
     public void onDrawFrame(GL10 glUnused){
-        //clear the rendering surface
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT);           //clear the rendering surface
 
-        //draw white rectangle
-        glUniform4f(uColorLocation, 1.0f, 1.0f, 1.0f, 1.0f);
-        glDrawArrays(GL_TRIANGLES, 0, 6);
+        glDrawArrays(GL_TRIANGLE_FAN, 0, 6);    //table
 
-        //draw red dividing line
-        glUniform4f(uColorLocation, 1.0f, 0.0f, 0.0f, 1.0f);
-        glDrawArrays(GL_LINES, 6, 2);
+        glDrawArrays(GL_LINES, 6, 2);           //dividing line
 
-        //draw blue and red mallets
-        glUniform4f(uColorLocation, 0.0f, 0.0f, 1.0f, 1.0f);
-        glDrawArrays(GL_POINTS, 8, 1);
-        glUniform4f(uColorLocation, 1.0f, 0.0f, 0.0f, 1.0f);
+        glDrawArrays(GL_POINTS, 8, 1);          //mallets
         glDrawArrays(GL_POINTS, 9, 1);
 
-        //puck ( yellow )
-        glUniform4f(uColorLocation, 1.0f, 1.0f, 0.0f, 1.0f);
-        glDrawArrays(GL_POINTS, 10, 1);
+        glDrawArrays(GL_POINTS, 10, 1);         //puck
     }
 }
