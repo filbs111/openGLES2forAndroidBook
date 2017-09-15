@@ -50,7 +50,10 @@ public class AirHockeyRenderer implements Renderer {
 
                 // Mallets
                 0f, -0.25f,
-                0f, 0.25f
+                0f, 0.25f,
+
+                // puck
+                0f, 0f
         };
 
         vertexData = ByteBuffer
@@ -103,5 +106,9 @@ public class AirHockeyRenderer implements Renderer {
         glDrawArrays(GL_POINTS, 8, 1);
         glUniform4f(uColorLocation, 1.0f, 0.0f, 0.0f, 1.0f);
         glDrawArrays(GL_POINTS, 9, 1);
+
+        //puck ( yellow )
+        glUniform4f(uColorLocation, 1.0f, 1.0f, 0.0f, 1.0f);
+        glDrawArrays(GL_POINTS, 10, 1);
     }
 }
