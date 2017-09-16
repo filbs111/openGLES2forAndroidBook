@@ -1,6 +1,7 @@
 package com.example.superuser.airhockey;
 
 import static android.opengl.GLES20.*;
+import static android.opengl.Matrix.*;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -32,25 +33,28 @@ public class AirHockeyRenderer implements Renderer {
     private int aColorLocation;
     private static final String A_POSITION = "a_Position";
     private int aPositionLocation;
+    private static final String U_MATRIX = "u_Matrix";
+    private final float[] projectionMatrix = new float[16];
+    private int uMatrixLocation;
 
     public AirHockeyRenderer(Context context){
         this.context = context;
         float[] tableVertices = {
                 // Triangle fan
                 0f, 0f,         1f,1f,1f,
-                -0.5f, -0.5f,   0.7f,0.7f,0.7f,
-                0.5f, -0.5f,    0.7f,0.7f,0.7f,
-                0.5f, 0.5f,     0.7f,0.7f,0.7f,
-                -0.5f, 0.5f,    0.7f,0.7f,0.7f,
-                -0.5f, -0.5f,   0.7f,0.7f,0.7f,
+                -0.5f, -0.8f,   0.7f,0.7f,0.7f,
+                0.5f, -0.8f,    0.7f,0.7f,0.7f,
+                0.5f, 0.8f,     0.7f,0.7f,0.7f,
+                -0.5f, 0.8f,    0.7f,0.7f,0.7f,
+                -0.5f, -0.8f,   0.7f,0.7f,0.7f,
 
                 // Line 1
                 -0.5f, 0f,      1f,0f,0f,
                 0.5f, 0f,       1f,0f,0f,
 
                 // Mallets
-                0f, -0.25f,     0f,0f,1f,
-                0f, 0.25f,      1f,0f,0f,
+                0f, -0.4f,     0f,0f,1f,
+                0f, 0.4f,      1f,0f,0f,
 
                 // puck
                 0f, 0f,         1f,1f,0f
@@ -83,17 +87,31 @@ public class AirHockeyRenderer implements Renderer {
         vertexData.position(POSITION_COMPONENT_COUNT);
         glVertexAttribPointer(aColorLocation, COLOR_COMPONENT_COUNT, GL_FLOAT, false, STRIDE, vertexData);
         glEnableVertexAttribArray(aColorLocation);
+        uMatrixLocation = glGetUniformLocation(program, U_MATRIX);
     }
 
     @Override
     public void onSurfaceChanged(GL10 glUnused, int width, int height){
-        //Set the OpenGL viewoprt to fill the entire surface
+        //Set the OpenGL viewport to fill the entire surface
         glViewport(0, 0, width, height);
+
+        final float aspectRatio = width > height ?
+                (float) width / (float) height :
+                (float) height / (float) width;
+
+        if (width > height){
+            //landscape
+            orthoM(projectionMatrix, 0, -aspectRatio, aspectRatio, -1f, 1f, -1f, 1f);
+        }else{
+            //portrait or square
+            orthoM(projectionMatrix, 0, -1f, 1f, -aspectRatio, aspectRatio, -1f, 1f);
+        }
     }
 
     @Override
     public void onDrawFrame(GL10 glUnused){
         glClear(GL_COLOR_BUFFER_BIT);           //clear the rendering surface
+        glUniformMatrix4fv(uMatrixLocation, 1, false, projectionMatrix, 0);
 
         glDrawArrays(GL_TRIANGLE_FAN, 0, 6);    //table
 
