@@ -85,4 +85,21 @@ public class ShaderHelper {
         Log.v(TAG,"Results of validating progam: " + validateStatus[0] + "\nLog:" + glGetProgramInfoLog(programObjectId));
         return validateStatus[0] != 0;
     }
+
+    public static int buildProgram(String vertexShaderSource, String fragmentShaderSource){
+        int program;
+
+        //compile the shaders.
+        int vertexShader = compileVertexShader(vertexShaderSource);
+        int fragmentShader = compileFragmentShader(fragmentShaderSource);
+
+        //link them into a shader program.
+        program = linkProgram(vertexShader, fragmentShader);
+
+        if (LoggerConfig.ON){
+            validateProgram(program);
+        }
+
+        return program;
+    }
 }
