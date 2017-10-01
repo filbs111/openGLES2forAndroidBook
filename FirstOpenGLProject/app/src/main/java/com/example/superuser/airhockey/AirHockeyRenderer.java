@@ -36,6 +36,8 @@ public class AirHockeyRenderer implements Renderer {
 
     private int texture;
 
+    private double rotAngle = 0;
+
     public AirHockeyRenderer(Context context){
         this.context = context;
     }
@@ -65,6 +67,10 @@ public class AirHockeyRenderer implements Renderer {
     @Override
     public void onDrawFrame(GL10 glUnused){
         glClear(GL_COLOR_BUFFER_BIT);           //clear the rendering surface
+
+        //rotate camera in circle. framerate dependent for simplicity
+        rotAngle+=0.01;
+        setLookAtM(viewMatrix, 0, 2.2f * (float) Math.sin(rotAngle), 1.2f, 2.2f * (float) Math.cos(rotAngle), 0f, 0f, 0f, 0f, 1f, 0f);
 
         multiplyMM(viewProjectionMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
 
